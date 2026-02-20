@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Package } from "lucide-react";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 async function ProtectedNav() {
   const supabase = await createClient();
@@ -28,11 +29,12 @@ async function ProtectedNav() {
           </div>
           <span className="font-semibold text-sm">HOM</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <div className="text-right hidden sm:block">
             <p className="text-xs font-medium">{profile?.username || data.user.email}</p>
             <p className="text-[10px] text-muted-foreground">Room {profile?.room_number || "—"}</p>
           </div>
+          <ThemeSwitcher />
         </div>
       </div>
     </nav>
@@ -49,8 +51,9 @@ function NavFallback() {
           </div>
           <span className="font-semibold text-sm">HOM</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <div className="w-20 h-4 bg-muted/50 rounded animate-pulse" />
+          <ThemeSwitcher />
         </div>
       </div>
     </nav>

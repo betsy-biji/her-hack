@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Package, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -14,7 +15,10 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      {/* Hero Section */}
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeSwitcher />
+      </div>
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
