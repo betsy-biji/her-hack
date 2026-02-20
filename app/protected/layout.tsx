@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogoutButton } from "@/components/logout-button";
 import { Package } from "lucide-react";
 
 async function ProtectedNav() {
@@ -34,7 +33,6 @@ async function ProtectedNav() {
             <p className="text-xs font-medium">{profile?.username || data.user.email}</p>
             <p className="text-[10px] text-muted-foreground">Room {profile?.room_number || "—"}</p>
           </div>
-          <LogoutButton />
         </div>
       </div>
     </nav>

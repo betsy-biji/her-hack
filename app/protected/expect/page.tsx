@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,14 @@ export default function ExpectOrderPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
+
+    // Reset form state when navigating back to this page
+    useEffect(() => {
+        setSuccess(false);
+        setTrackingId("");
+        setExpectedDate("");
+        setError(null);
+    }, []);
 
     // Get today's date in YYYY-MM-DD format for the min attribute
     const today = new Date().toISOString().split("T")[0];
