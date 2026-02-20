@@ -1,10 +1,63 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
 import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { LogoutButton } from "@/components/logout-button";
+import { Package } from "lucide-react";
+
+async function ProtectedNav() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data?.user) {
+    redirect("/auth/login");
+  }
+
+  // Get profile info
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username, room_number")
+    .eq("user_id", data.user.id)
+    .single();
+
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <div className="w-full max-w-lg mx-auto flex items-center justify-between px-4 h-14">
+        <Link href="/protected" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+            <Package className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-semibold text-sm">HOM</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="text-right hidden sm:block">
+            <p className="text-xs font-medium">{profile?.username || data.user.email}</p>
+            <p className="text-[10px] text-muted-foreground">Room {profile?.room_number || "—"}</p>
+          </div>
+          <LogoutButton />
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function NavFallback() {
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <div className="w-full max-w-lg mx-auto flex items-center justify-between px-4 h-14">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+            <Package className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-semibold text-sm">HOM</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-20 h-4 bg-muted/50 rounded animate-pulse" />
+        </div>
+      </div>
+    </nav>
+  );
+}
 
 export default function ProtectedLayout({
   children,
@@ -12,43 +65,15 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          {children}
-        </div>
+    <main className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
+      <Suspense fallback={<NavFallback />}>
+        <ProtectedNav />
+      </Suspense>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
+      {/* Content */}
+      <div className="flex-1 w-full max-w-lg mx-auto px-4 py-6">
+        {children}
       </div>
     </main>
   );
