@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Package, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { InstallPrompt } from "@/components/install-prompt";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -44,8 +45,6 @@ export default async function Home() {
             Secure your packages. No more missing deliveries at the hostel.
           </p>
 
-
-
           {/* CTA Buttons */}
           <div className="flex flex-col gap-3">
             <Button asChild size="lg" className="w-full gradient-primary text-white hover:opacity-90 transition-opacity">
@@ -64,6 +63,9 @@ export default async function Home() {
       <footer className="text-center py-6 text-xs text-muted-foreground border-t border-border/50">
         Built for hostel safety 🏠
       </footer>
+
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </main>
   );
 }
