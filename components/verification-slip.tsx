@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Package, User, MapPin, CalendarDays, Hash, Clock } from "lucide-react";
+import { CheckCircle2, Package, User, MapPin, CalendarDays, Clock } from "lucide-react";
 
 interface VerificationSlipProps {
     username: string;
@@ -18,7 +18,7 @@ export function VerificationSlip({
     expectedDate,
     retrievedAt,
 }: VerificationSlipProps) {
-    const verificationCode = generateVerificationCode(orderTrackingId, retrievedAt);
+
     const retrievedDate = new Date(retrievedAt);
 
     return (
@@ -109,19 +109,7 @@ export function VerificationSlip({
                         </div>
                     </div>
 
-                    {/* Dashed separator */}
-                    <div className="border-t-2 border-dashed border-border my-4" />
 
-                    {/* Verification Code */}
-                    <div className="text-center">
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                            <Hash className="w-3.5 h-3.5 text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">Verification Code</p>
-                        </div>
-                        <p className="font-mono text-lg font-bold tracking-widest text-primary">
-                            {verificationCode}
-                        </p>
-                    </div>
 
                     <div className="mt-4 text-center">
                         <p className="text-[10px] text-muted-foreground">
@@ -136,14 +124,4 @@ export function VerificationSlip({
     );
 }
 
-function generateVerificationCode(trackingId: string, timestamp: string): string {
-    // Simple hash-like code from tracking ID + timestamp
-    const combined = trackingId + timestamp;
-    let hash = 0;
-    for (let i = 0; i < combined.length; i++) {
-        const char = combined.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0;
-    }
-    return Math.abs(hash).toString(36).toUpperCase().slice(0, 8).padEnd(8, "X");
-}
+

@@ -11,6 +11,7 @@ import {
     Clock,
     CheckCircle2,
 } from "lucide-react";
+import { LogoutButton } from "@/components/logout-button";
 
 interface Order {
     id: string;
@@ -52,13 +53,16 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Welcome Section */}
-            <div>
-                <h1 className="text-2xl font-bold">
-                    Hi, {username.split(" ")[0]}! 👋
-                </h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                    Room {roomNumber} • Manage your hostel packages
-                </p>
+            <div className="flex items-start justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold">
+                        Hi, {username.split(" ")[0]}! 👋
+                    </h1>
+                    <p className="text-muted-foreground text-sm mt-1">
+                        Room {roomNumber} • Manage your hostel packages
+                    </p>
+                </div>
+                <LogoutButton />
             </div>
 
             {/* Stats */}
@@ -159,8 +163,8 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                                         <div className="flex items-center gap-3">
                                             <div
                                                 className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${order.status === "expected"
-                                                        ? "bg-amber-100 dark:bg-amber-950/30"
-                                                        : "bg-emerald-100 dark:bg-emerald-950/30"
+                                                    ? "bg-amber-100 dark:bg-amber-950/30"
+                                                    : "bg-emerald-100 dark:bg-emerald-950/30"
                                                     }`}
                                             >
                                                 {order.status === "expected" ? (
@@ -184,8 +188,8 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                                         </div>
                                         <span
                                             className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${order.status === "expected"
-                                                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
-                                                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                                                ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
+                                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
                                                 }`}
                                         >
                                             {order.status === "expected" ? "Pending" : "Retrieved"}
