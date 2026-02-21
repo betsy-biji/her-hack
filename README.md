@@ -1,110 +1,164 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+<img width="1280" height="640" alt="img" src="https://github.com/user-attachments/assets/edf91eed-58d6-413f-81f2-7a7d368870d7" />
+PARCELGUARD🎯
+Basic Details
+Team Name: Sparkle
+Team Members
+Member 1: Adhithya K - Muthoot Institute of Technology and Science
+Member 2: Betsy Biji - Muthoot Institute of Technology and Science
+Hosted Project Link
+https://her-hack.vercel.app/
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+Project Description
+ParcelGuard is a secure parcel verification system designed for college hostels where parcel theft and mix-ups are common.
+It ensures that only the rightful owner can collect a parcel using a two-step verification process involving OTP and Order ID scanning at the security desk.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+The Problem statement
+In many college hostels, parcels are left at a common security/front desk.
+Due to lack of verification, parcels often get misplaced or taken by someone else, leading to loss, confusion, and disputes among students.
 
-## Features
+The Solution
+ParcelGuard solves this by introducing a two-step verification system:
+Order Registration – Students register their parcel details (Order ID).
+Secure Retrieval –
+An OTP is generated when the student comes to collect the parcel
+The security desk verifies:
+OTP entered by the student
+Order ID scanned from the parcel
+The parcel is handed over only if both OTP and Order ID match
+This ensures only the rightful owner can retrieve the parcel.
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+Technical Details
+Technologies/Components Used
+For Software:
 
-## Demo
+Languages used: JavaScript,TypeScript
+Frameworks used: Next.js,Node.js
+Libraries used: Axios,Zod,JWT,QR Code,Barcode Scanner Library (e.g., html5-qrcode)
+Tools used: VS Code,Git & GitHub,Vercel (Deployment),Antigravity (UI/Design tool)
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+Implementation
+For Software:
+Installation
+git clone https://github.com/your-username/parcelguard.git,cd her-hack,npm install
+Run
+npm run dev
 
-## Deploy to Vercel
 
-Vercel deployment will guide you through creating a Supabase account and project.
+Project Documentation
+For Software:
+Screenshots 
+LOGGED IN PERSONAL DASHBOARD
+<img width="992" height="832" alt="Screenshot 2026-02-21 072255" src="https://github.com/user-attachments/assets/da2f6d95-0023-4077-b46a-4f6a45aab0c9" />
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+DETAILS FORM OF EXPECTED PACKAGE WHICH WILL ARRIVE
+<img width="769" height="627" alt="Screenshot 2026-02-21 084816" src="https://github.com/user-attachments/assets/ba909898-b9ec-46ec-bf2f-88cd098579a6" />
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+DETAILS OF OTP GENERATION PHASE FOR VERIFICATION
+<img width="678" height="573" alt="Screenshot 2026-02-21 084756" src="https://github.com/user-attachments/assets/a7dd0bc0-b22a-4fb2-8f66-da0a55424722" />
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
 
-## Clone and run locally
+Diagrams
+System Architecture:
+The architecture follows a Client-Server-Database model, optimized for real-time verification at the security desk.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+1. Components & Tech Stack
+Frontend (Next.js & TypeScript): Handles the Student Dashboard (registering parcels) and the Security Desk Interface (scanning and verifying).
+Backend (Node.js/Next.js API Routes): Processes the logic for OTP generation, barcode validation, and JWT-based authentication.
+Database (PostgreSQL/MongoDB): Stores student profiles, parcel "Expected" records, and "Received" logs.
+Verification Engine: * Barcode Scanner (html5-qrcode): Captures the Order ID from the physical parcel.
+OTP Logic: Validates the temporary code provided by the student.
 
-2. Create a Next.js app using the Supabase Starter template npx command
+Architecture Diagram Explain your system architecture - components, data flow, tech stack interaction
+<img width="1024" height="1024" alt="Gemini_Generated_Image_a7bycja7bycja7by" src="https://github.com/user-attachments/assets/4930c655-8845-41c4-a881-80062b1fa666" />
+componets 
+Student Web App: Allows students to register parcel Order IDs and request OTP for secure parcel collection.
+Security Desk Dashboard: Used by security staff to enter OTP and scan parcel Order IDs for verification.
+Backend Server: Handles OTP generation, order verification logic, and communication between frontend and database.
+Database: Stores registered Order IDs, generated OTPs, and parcel verification records.
+Parcel Scanner (Camera): Scans the Order ID printed on the parcel and sends it for verification.
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+data flow
+Parcel details are registered by the student, an OTP is generated during retrieval, the parcel Order ID is scanned, and both are verified by the backend before allowing collection.
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+tech stack interaction
+The Next.js frontend communicates with Node.js backend APIs, which validate data using the database and scanner input to securely verify parcel ownership.
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
 
-3. Use `cd` to change into the app's directory
+Application Workflow:
+Student places an order online
+Student registers the Order ID in ParcelGuard
+Parcel arrives at college security desk
+Student visits security desk to collect parcel
+System generates a one-time OTP
+Security dashboard:
+OTP is entered
+Parcel Order ID is scanned
+System matches:
+Registered Order ID
+Scanned Order ID
+OTP
+If verified ✅ → Parcel is handed over
 
-   ```bash
-   cd with-supabase-app
-   ```
 
-4. Rename `.env.example` to `.env.local` and update the following:
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
 
-5. You can now run the Next.js local development server:
+Additional Documentation
+For Web Projects with Backend:
+API Documentation
+Base URL: https://api.her-hack.com
 
-   ```bash
-   npm run dev
-   ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+Endpoints
+GET /api/endpoint
+POST /api/register-order
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+Description: 
+Parameters:Registers a parcel Order ID for a student
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+response
+{
+  "status": "success",
+  "message": "Order registered successfully"
+}
+POST /api/endpoint
 
-## Feedback and issues
+POST /api/verify-parcel
+Description: Verifies OTP and scanned Order ID
+Request Body:
+{
+  
+  "orderId": "ORD123456",
+  "otp": "482931"
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+}
+Response:
+{
+  "status": "success",
+  "verified": true
+}
 
-## More Supabase examples
+AI Tools Used (Transparency Bonus)
+Tool Used: ChatGPT
+Purpose:
+Architecture planning
+API design
+README documentation
+Debugging assistance
+Percentage of AI-generated code: ~20%
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
-"# her-hack" 
+Human Contributions:
+System design & logic
+UI/UX decisions
+API integration
+Testing & deployment
+
+
+team contributions
+Betsy Biji: Frontend development, UI design, documentation
+Adhithya K: Backend APIs, OTP logic, database handling
+
+License
+This project is licensed under the MIT License – see the LICENSE file for details.
+Made with ❤️ at TinkerHub
