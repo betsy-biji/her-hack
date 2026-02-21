@@ -1,9 +1,15 @@
 <img width="1280" height="640" alt="img" src="https://github.com/user-attachments/assets/edf91eed-58d6-413f-81f2-7a7d368870d7" />
+
 PARCELGUARD🎯
+
 Basic Details
+
 Team Name: Sparkle
+
 Team Members
+
 Member 1: Adhithya K - Muthoot Institute of Technology and Science
+
 Member 2: Betsy Biji - Muthoot Institute of Technology and Science
 Hosted Project Link
 https://her-hack.vercel.app/
@@ -70,7 +76,9 @@ Verification Engine: * Barcode Scanner (html5-qrcode): Captures the Order ID fro
 OTP Logic: Validates the temporary code provided by the student.
 
 Architecture Diagram Explain your system architecture - components, data flow, tech stack interaction
+
 <img width="1024" height="1024" alt="Gemini_Generated_Image_a7bycja7bycja7by" src="https://github.com/user-attachments/assets/4930c655-8845-41c4-a881-80062b1fa666" />
+
 componets 
 Student Web App: Allows students to register parcel Order IDs and request OTP for secure parcel collection.
 Security Desk Dashboard: Used by security staff to enter OTP and scan parcel Order IDs for verification.
@@ -161,4 +169,5 @@ Adhithya K: Backend APIs, OTP logic, database handling
 
 License
 This project is licensed under the MIT License – see the LICENSE file for details.
+
 Made with ❤️ at TinkerHub
