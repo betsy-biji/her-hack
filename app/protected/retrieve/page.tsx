@@ -5,47 +5,69 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, PackageCheck, XCircle } from "lucide-react";
-import { VerificationSlip } from "@/components/verification-slip";
+import {
+    ArrowLeft,
+    PackageCheck,
+    XCircle,
+    CheckCircle2,
+    Loader2,
+    Shield,
+} from "lucide-react";
 import Link from "next/link";
 
-interface RetrievalResult {
-    order: {
-        order_tracking_id: string;
-        expected_date: string;
-        retrieved_at: string;
-    };
-    profile: {
-        username: string;
-        room_number: string;
-    };
-}
-
-export default function RetrieveOrderPage() {
-    const [trackingId, setTrackingId] = useState("");
+export default function VerifyPackagePage() {
+    const [otp, setOtp] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [result, setResult] = useState<RetrievalResult | null>(null);
+    const [verified, setVerified] = useState(false);
+    const [orderStatus, setOrderStatus] = useState<string | null>(null);
+    const [verifiedOrderId, setVerifiedOrderId] = useState<string | null>(null);
 
     // Reset form state when navigating back to this page
     useEffect(() => {
-        setResult(null);
-        setTrackingId("");
+        setVerified(false);
+        setOtp("");
         setError(null);
+        setOrderStatus(null);
+        setVerifiedOrderId(null);
     }, []);
+
+    // Poll for collection status after verification
+    useEffect(() => {
+        if (!verified || !verifiedOrderId) return;
+
+        const pollStatus = async () => {
+            try {
+                const res = await fetch("/api/orders");
+                if (!res.ok) return;
+                const data = await res.json();
+                const order = data.orders?.find(
+                    (o: { id: string; status: string }) => o.id === verifiedOrderId
+                );
+                if (order) {
+                    setOrderStatus(order.status);
+                }
+            } catch {
+                // Silently ignore polling errors
+            }
+        };
+
+        pollStatus();
+        const interval = setInterval(pollStatus, 3000);
+        return () => clearInterval(interval);
+    }, [verified, verifiedOrderId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
-        setResult(null);
 
         try {
             const res = await fetch("/api/orders/retrieve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    orderTrackingId: trackingId.trim(),
+                    otp: otp.trim(),
                 }),
             });
 
@@ -56,7 +78,9 @@ export default function RetrieveOrderPage() {
                 return;
             }
 
-            setResult(data);
+            setVerified(true);
+            setVerifiedOrderId(data.order.id);
+            setOrderStatus(data.order.status);
         } catch {
             setError("Something went wrong. Please try again.");
         } finally {
@@ -64,8 +88,10 @@ export default function RetrieveOrderPage() {
         }
     };
 
-    // Show the verification slip if retrieval was successful
-    if (result) {
+    // Show waiting screen after successful verification
+    if (verified) {
+        const isCollected = orderStatus === "collected";
+
         return (
             <div className="space-y-4 animate-fade-in">
                 <Link
@@ -76,25 +102,80 @@ export default function RetrieveOrderPage() {
                     Back to Dashboard
                 </Link>
 
-                <VerificationSlip
-                    username={result.profile.username}
-                    roomNumber={result.profile.room_number}
-                    orderTrackingId={result.order.order_tracking_id}
-                    expectedDate={result.order.expected_date}
-                    retrievedAt={result.order.retrieved_at}
-                />
-
-                <div className="text-center pt-2">
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            setResult(null);
-                            setTrackingId("");
-                        }}
+                <Card className="overflow-hidden border-0 slip-shadow max-w-sm mx-auto">
+                    {/* Header */}
+                    <div
+                        className={`${isCollected ? "gradient-success" : "gradient-primary"
+                            } text-white p-6 text-center transition-colors duration-500`}
                     >
-                        Retrieve Another
-                    </Button>
-                </div>
+                        <div className="flex justify-center mb-3">
+                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                                {isCollected ? (
+                                    <CheckCircle2 className="w-10 h-10" />
+                                ) : (
+                                    <Shield className="w-10 h-10 animate-pulse" />
+                                )}
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold tracking-tight">
+                            {isCollected ? "COLLECTED" : "VERIFIED"}
+                        </h2>
+                        <p className="text-sm text-white/80 mt-1">
+                            {isCollected
+                                ? "Package has been handed over!"
+                                : "Waiting for security to hand over your package..."}
+                        </p>
+                    </div>
+
+                    <CardContent className="p-5">
+                        <div className="border-t-2 border-dashed border-border mb-4" />
+
+                        <div className="text-center space-y-3">
+                            <p className="text-sm font-mono font-medium">
+                                OTP: {otp}
+                            </p>
+
+                            {!isCollected && (
+                                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>Security is reviewing your request...</span>
+                                </div>
+                            )}
+
+                            {isCollected && (
+                                <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                                    <p className="text-xs font-medium text-green-700 dark:text-green-400">
+                                        ✅ Security has confirmed. You may collect your package.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-4 text-center">
+                            <p className="text-[10px] text-muted-foreground">
+                                Show this screen to the security guard.
+                                <br />
+                                Status updates automatically.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {isCollected && (
+                    <div className="text-center pt-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setVerified(false);
+                                setOtp("");
+                                setOrderStatus(null);
+                                setVerifiedOrderId(null);
+                            }}
+                        >
+                            Verify Another
+                        </Button>
+                    </div>
+                )}
             </div>
         );
     }
@@ -117,9 +198,9 @@ export default function RetrieveOrderPage() {
                             <PackageCheck className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <CardTitle className="text-lg">Retrieve a Package</CardTitle>
+                            <CardTitle className="text-lg">Verify a Package</CardTitle>
                             <p className="text-xs text-muted-foreground mt-0.5">
-                                Verify ownership & get your approval slip
+                                Enter the OTP you received when registering
                             </p>
                         </div>
                     </div>
@@ -127,18 +208,20 @@ export default function RetrieveOrderPage() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="tracking-id">Order / Tracking ID</Label>
+                            <Label htmlFor="otp-code">Verification OTP</Label>
                             <Input
-                                id="tracking-id"
+                                id="otp-code"
                                 type="text"
-                                placeholder="Enter the tracking ID from the parcel"
+                                inputMode="numeric"
+                                maxLength={6}
+                                placeholder="Enter your 6-digit OTP"
                                 required
-                                value={trackingId}
-                                onChange={(e) => setTrackingId(e.target.value)}
-                                className="font-mono"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                className="font-mono text-center text-2xl tracking-[0.3em]"
                             />
                             <p className="text-[11px] text-muted-foreground">
-                                Type the tracking number shown on the package
+                                Enter the OTP code shown when you registered this order
                             </p>
                         </div>
 
@@ -154,7 +237,7 @@ export default function RetrieveOrderPage() {
                             className="w-full gradient-success text-white hover:opacity-90 transition-opacity"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Verifying..." : "Verify & Retrieve"}
+                            {isLoading ? "Verifying..." : "Verify & Request Handover"}
                         </Button>
                     </form>
                 </CardContent>
@@ -162,8 +245,8 @@ export default function RetrieveOrderPage() {
 
             <div className="text-center text-xs text-muted-foreground p-4">
                 <p>
-                    🔒 Only the person who registered this tracking ID can retrieve the
-                    package. Show the approval slip to security.
+                    🔒 Only the person who registered this order can verify it
+                    using their secret OTP. Security will hand it over once verified.
                 </p>
             </div>
         </div>

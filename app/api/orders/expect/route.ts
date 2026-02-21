@@ -1,5 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { randomInt } from "crypto";
+
+function generateOtp(): string {
+    // 6-digit numeric OTP
+    return String(randomInt(100000, 999999));
+}
 
 export async function POST(request: Request) {
     try {
@@ -36,6 +42,9 @@ export async function POST(request: Request) {
             );
         }
 
+        // Generate a unique 6-digit OTP for this order
+        const otp = generateOtp();
+
         const { data, error } = await supabase
             .from("orders")
             .insert({
@@ -43,6 +52,7 @@ export async function POST(request: Request) {
                 order_tracking_id: orderTrackingId,
                 expected_date: expectedDate,
                 status: "expected",
+                otp,
             })
             .select()
             .single();

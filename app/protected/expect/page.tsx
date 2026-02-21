@@ -15,6 +15,7 @@ export default function ExpectOrderPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [otp, setOtp] = useState<string | null>(null);
     const router = useRouter();
 
     // Reset form state when navigating back to this page
@@ -58,6 +59,7 @@ export default function ExpectOrderPage() {
             }
 
             setSuccess(true);
+            setOtp(data.order.otp);
         } catch {
             setError("Something went wrong. Please try again.");
         } finally {
@@ -72,10 +74,30 @@ export default function ExpectOrderPage() {
                     <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h2 className="text-xl font-bold mb-1">Order Registered!</h2>
-                <p className="text-sm text-muted-foreground text-center mb-6">
+                <p className="text-sm text-muted-foreground text-center mb-4">
                     Tracking ID <span className="font-mono font-semibold">{trackingId}</span> has been
-                    registered. You&apos;ll be able to retrieve it when it arrives.
+                    registered.
                 </p>
+
+                {/* OTP Display */}
+                {otp && (
+                    <div className="w-full max-w-xs mb-6">
+                        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-center">
+                            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mb-2">
+                                🔐 Your Verification OTP
+                            </p>
+                            <p className="text-3xl font-mono font-bold tracking-[0.3em] text-amber-800 dark:text-amber-300">
+                                {otp}
+                            </p>
+                            <p className="text-[10px] text-amber-600 dark:text-amber-500 mt-2">
+                                Show this code at the security desk to collect your package.
+                                <br />
+                                Keep it secret — don&apos;t share it with anyone!
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex gap-3">
                     <Button
                         variant="outline"
@@ -83,6 +105,7 @@ export default function ExpectOrderPage() {
                             setSuccess(false);
                             setTrackingId("");
                             setExpectedDate("");
+                            setOtp(null);
                         }}
                     >
                         Add Another

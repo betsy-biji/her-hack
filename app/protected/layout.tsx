@@ -13,12 +13,22 @@ async function ProtectedNav() {
     redirect("/auth/login");
   }
 
-  // Get profile info
+  // Get profile info including role
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, room_number")
+    .select("username, room_number, role")
     .eq("user_id", data.user.id)
     .single();
+
+  // Redirect security users to their dashboard
+  if (profile?.role === "security") {
+    redirect("/security");
+  }
+
+  // Redirect admin users to their dashboard
+  if (profile?.role === "admin") {
+    redirect("/admin");
+  }
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">

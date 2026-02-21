@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+// Security guard marks a verified order as collected (package handed over)
 export async function POST(request: Request) {
     try {
         const supabase = await createClient();
@@ -10,66 +11,63 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const body = await request.json();
-        const { otp } = body;
+        // Check that the user has 'security' role
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("user_id", authData.user.id)
+            .single();
 
-        if (!otp) {
+        if (!profile || profile.role !== "security") {
+            return NextResponse.json({ error: "Forbidden: security role required" }, { status: 403 });
+        }
+
+        const body = await request.json();
+        const { orderId } = body;
+
+        if (!orderId) {
             return NextResponse.json(
-                { error: "Verification OTP is required" },
+                { error: "Order ID is required" },
                 { status: 400 }
             );
         }
 
-        // Find the order by OTP + user ownership + expected status
+        // Verify the order exists and is in 'verified' status
         const { data: order, error: findError } = await supabase
             .from("orders")
-            .select("*")
-            .eq("otp", otp.trim())
-            .eq("user_id", authData.user.id)
-            .eq("status", "expected")
+            .select("id, status")
+            .eq("id", orderId)
+            .eq("status", "verified")
             .single();
 
         if (findError || !order) {
             return NextResponse.json(
-                {
-                    error:
-                        "Invalid OTP. No expected order found with this code for your account.",
-                },
+                { error: "No verified order found with this ID" },
                 { status: 404 }
             );
         }
 
-        // Update order status to verified
+        // Mark as collected
         const now = new Date().toISOString();
         const { data: updatedOrder, error: updateError } = await supabase
             .from("orders")
             .update({
-                status: "verified",
-                verified_at: now,
+                status: "collected",
+                collected_at: now,
             })
-            .eq("id", order.id)
+            .eq("id", orderId)
             .select()
             .single();
 
         if (updateError) {
-            console.error("Error updating order:", updateError);
+            console.error("Error collecting order:", updateError);
             return NextResponse.json(
-                { error: "Failed to verify order" },
+                { error: "Failed to mark order as collected" },
                 { status: 500 }
             );
         }
 
-        // Fetch user profile for display
-        const { data: profile } = await supabase
-            .from("profiles")
-            .select("username, room_number")
-            .eq("user_id", authData.user.id)
-            .single();
-
-        return NextResponse.json({
-            order: updatedOrder,
-            profile: profile || { username: authData.user.email, room_number: "N/A" },
-        });
+        return NextResponse.json({ order: updatedOrder });
     } catch {
         return NextResponse.json(
             { error: "Internal server error" },

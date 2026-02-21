@@ -10,6 +10,7 @@ import {
     ArrowRight,
     Clock,
     CheckCircle2,
+    Shield,
 } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 
@@ -20,6 +21,7 @@ interface Order {
     status: string;
     created_at: string;
     retrieved_at: string | null;
+    otp: string | null;
 }
 
 interface DashboardClientProps {
@@ -48,7 +50,8 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
     }, [fetchOrders]);
 
     const expectedCount = orders.filter((o) => o.status === "expected").length;
-    const retrievedCount = orders.filter((o) => o.status === "retrieved").length;
+    const verifiedCount = orders.filter((o) => o.status === "verified").length;
+    const collectedCount = orders.filter((o) => o.status === "collected" || o.status === "retrieved").length;
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -66,7 +69,7 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
                 <Card className="border-border/50">
                     <CardContent className="p-4">
                         <div className="flex items-center gap-2">
@@ -79,10 +82,19 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                 <Card className="border-border/50">
                     <CardContent className="p-4">
                         <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                            <span className="text-xs text-muted-foreground">Retrieved</span>
+                            <Shield className="w-4 h-4 text-blue-500" />
+                            <span className="text-xs text-muted-foreground">Verified</span>
                         </div>
-                        <p className="text-2xl font-bold mt-1">{retrievedCount}</p>
+                        <p className="text-2xl font-bold mt-1">{verifiedCount}</p>
+                    </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                            <span className="text-xs text-muted-foreground">Collected</span>
+                        </div>
+                        <p className="text-2xl font-bold mt-1">{collectedCount}</p>
                     </CardContent>
                 </Card>
             </div>
@@ -116,9 +128,9 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                                     <PackageCheck className="w-7 h-7 text-white" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-base">Retrieve a Package</h3>
+                                    <h3 className="font-semibold text-base">Verify a Package</h3>
                                     <p className="text-xs text-muted-foreground mt-0.5">
-                                        Verify & collect your delivery
+                                        Prove ownership & request handover
                                     </p>
                                 </div>
                                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -164,11 +176,15 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                                             <div
                                                 className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${order.status === "expected"
                                                     ? "bg-amber-100 dark:bg-amber-950/30"
-                                                    : "bg-emerald-100 dark:bg-emerald-950/30"
+                                                    : order.status === "verified"
+                                                        ? "bg-blue-100 dark:bg-blue-950/30"
+                                                        : "bg-emerald-100 dark:bg-emerald-950/30"
                                                     }`}
                                             >
                                                 {order.status === "expected" ? (
                                                     <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                                ) : order.status === "verified" ? (
+                                                    <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                 ) : (
                                                     <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                 )}
@@ -184,15 +200,22 @@ export function DashboardClient({ username, roomNumber }: DashboardClientProps) 
                                                         { day: "numeric", month: "short" }
                                                     )}
                                                 </p>
+                                                {order.status === "expected" && order.otp && (
+                                                    <p className="text-[10px] font-mono text-amber-600 dark:text-amber-400 mt-0.5">
+                                                        OTP: {order.otp}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                         <span
                                             className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${order.status === "expected"
                                                 ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
-                                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                                                : order.status === "verified"
+                                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400"
+                                                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
                                                 }`}
                                         >
-                                            {order.status === "expected" ? "Pending" : "Retrieved"}
+                                            {order.status === "expected" ? "Pending" : order.status === "verified" ? "Verified" : "Collected"}
                                         </span>
                                     </div>
                                 </CardContent>
